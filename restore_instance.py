@@ -123,7 +123,7 @@ def try_to_create_ec2_instance():
         return None
 
 
-def create_ec2_instance(non_root_snap_id, instance_id, max_retry=5):
+def create_ec2_instance(max_retry=5):
 
     retry = 0
 
