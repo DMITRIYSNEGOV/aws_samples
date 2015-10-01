@@ -66,9 +66,6 @@ def create_bdm(size, type, rate, non_root_snap_id):
 def try_to_create_ec2_instance():
 
     try:
-	# some samples of required info, you can find it on your instance menu
-	# AWS_REGION = 'us-west-2
-	# kays can be found in instance menu as well
         conn = boto.ec2.connect_to_region(
             AWS_REGION,
             aws_access_key_id=AWS_ACCESS_KEY_ID,
@@ -77,13 +74,9 @@ def try_to_create_ec2_instance():
 
         tenantid = str(uuid.uuid4())[:8]
 
-	# INSTANCE_TYPE = 't2.micro'
         instance_type = INSTANCE_TYPE
-	# DATA_VOLUME_SIZE = '8G'
         data_volume_size = DATA_VOLUME_SIZE
-	# DATA_VOLUME_RATE = 100
         data_volume_rate = DATA_VOLUME_RATE
-	# DATA_VOLUME_PROVISIONED = False
         data_volume_type = DATA_VOLUME_TYPE
 
         bdm = create_bdm(data_volume_size, data_volume_type,
@@ -99,10 +92,6 @@ def try_to_create_ec2_instance():
         logger.debug(cmd)
         user_data = cmd
 
-	# AWS_AMI_IMAGE_ID = 'ami-f53b97b6'
-	# AWS_KEY_NAME = 'your-aws-key-name'
-	# AWS_SECURITY_GROUPS = ['sr-b47f11z1']
-	# AWS_SBNET_ID  = 'subnet-75bc7719'
         reservation = conn.run_instances(
             AWS_AMI_IMAGE_ID,
             instance_type=instance_type,
