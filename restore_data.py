@@ -1,5 +1,4 @@
 import time
-import uuid
 import logging
 import boto.ec2
 import boto.exception
@@ -96,8 +95,6 @@ def try_to_create_ec2_instance(non_root_snap_id, instance_id):
         try_to_stop_ec2_instance(conn, non_root_snap_id,
                                  instance_id)
 
-        tenantid = str(uuid.uuid4())[:8]
-
         instance_type = INSTANCE_TYPE
         data_volume_size = DATA_VOLUME_SIZE
         data_volume_rate = DATA_VOLUME_RATE
@@ -109,7 +106,6 @@ def try_to_create_ec2_instance(non_root_snap_id, instance_id):
         some_variable_to_pass = "here is some data that you want to pass to server"
 
         cmd = USER_SCRIPT_TEMPLATE_RECOVERY_CASE.format(
-            tenantid=tenantid,
             some_variable_to_pass=some_variable_to_pass
         )
 
@@ -131,14 +127,9 @@ def try_to_create_ec2_instance(non_root_snap_id, instance_id):
         while instance.update() != "running":
             time.sleep(5)
 
-        data_vol_id = extract_non_root_id(
-            instance.get_attribute('blockDeviceMapping'))
-        conn.create_tags([instance.id, data_vol_id], {"Name":
-                                                      tenantid})
 
         # Check that instances got an IP and proper name
         assert instance.ip_address is not None
-        assert instance.tags.get('Name') == tenantid
         assert instance.update() == "running"
 
         return instance

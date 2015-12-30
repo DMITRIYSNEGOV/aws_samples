@@ -1,5 +1,4 @@
 import time
-import uuid
 import logging
 import boto.ec2
 import boto.exception
@@ -72,8 +71,6 @@ def try_to_create_ec2_instance():
             aws_secret_access_key=AWS_SECRET_ACCESS_KEY
         )
 
-        tenantid = str(uuid.uuid4())[:8]
-
         instance_type = INSTANCE_TYPE
         data_volume_size = DATA_VOLUME_SIZE
         data_volume_rate = DATA_VOLUME_RATE
@@ -86,7 +83,6 @@ def try_to_create_ec2_instance():
 
         cmd = USER_SCRIPT_TEMPLATE.format(
             some_variable_to_pass=some_variable_to_pass,
-            tenantid=tenantid,
         )
 
         logger.debug(cmd)
@@ -107,12 +103,10 @@ def try_to_create_ec2_instance():
         while instance.update() != "running":
             time.sleep(5)
 
-        conn.create_tags([instance.id], {"Name": tenantid})
         instance.update()
 
         # Check that instances got an IP and proper name
         assert instance.ip_address is not None
-        assert instance.tags.get('Name') == tenantid
         assert instance.update() == "running"
 
         return instance
