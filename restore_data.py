@@ -69,18 +69,16 @@ def extract_non_root_id(bdm):
 
 
 def try_to_stop_ec2_instance(user, conn, non_root_snap_id, instance_id):
-    retry = 0
-    while (retry < 3):
-        try:
-            conn.stop_instances([instance_id])
-            reservations = conn.get_all_reservations([instance_id])
-            instance = reservations[0].instances[0]
-            while instance.update() != "stopped":
-                time.sleep(5)
-            return "stopped"
-        except (boto.exception.EC2ResponseError, AssertionError) as e:
-            logger.exception(e)
-            logger.error(e)
+    try:
+        conn.stop_instances([instance_id])
+        reservations = conn.get_all_reservations([instance_id])
+        instance = reservations[0].instances[0]
+        while instance.update() != "stopped":
+            time.sleep(5)
+        return "stopped"
+    except (boto.exception.EC2ResponseError, AssertionError) as e:
+        logger.exception(e)
+        logger.error(e)
 
 
 def try_to_create_ec2_instance(non_root_snap_id, instance_id):
